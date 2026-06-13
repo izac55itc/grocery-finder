@@ -31,18 +31,27 @@ async function fetchRealCanadianSuperStorePrices(postalCode = 'V3A3M2', daysAhea
         postalCode: postalCode.replace(/\s/g, '')
       })
 
-      const response = await fetch(`${baseUrl}?${params}`, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          'Accept': 'application/json',
-        },
-        timeout: 10000
-      })
+      try {
+        const response = await fetch(`${baseUrl}?${params}`, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'application/json',
+            'Referer': 'https://www.realcanadiansuperstore.ca/'
+          },
+          timeout: 10000
+        })
 
-      if (!response.ok) continue
+        if (!response.ok) {
+          console.log(`[real-canadian-superstore] ${item}: HTTP ${response.status}`)
+          continue
+        }
 
-      const data = await response.json()
-      if (!data.products) continue
+        const data = await response.json()
+        if (!data.products) continue
+      } catch (itemErr) {
+        console.log(`[real-canadian-superstore] ${item}: ${itemErr.message}`)
+        continue
+      }
 
       // Extract prices from this item's results
       data.products.forEach(product => {
@@ -50,7 +59,7 @@ async function fetchRealCanadianSuperStorePrices(postalCode = 'V3A3M2', daysAhea
       })
 
       // Rate limiting
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise(resolve => setTimeout(resolve, 1500))
     }
 
     if (allPrices.size > 0) {

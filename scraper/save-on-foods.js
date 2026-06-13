@@ -27,18 +27,27 @@ async function fetchSaveOnFoodsPrices(postalCode = 'V6B4X8', daysAhead = 7) {
     for (const item of STAPLE_ITEMS) {
       const url = `${baseUrl}?postalCode=${postalCode}&query=${encodeURIComponent(item)}&take=20`
 
-      const response = await fetch(url, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          'Accept': 'application/json',
-        },
-        timeout: 10000
-      })
+      try {
+        const response = await fetch(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'application/json',
+            'Referer': 'https://www.saveonfoods.com/'
+          },
+          timeout: 10000
+        })
 
-      if (!response.ok) continue
+        if (!response.ok) {
+          console.log(`[save-on-foods] ${item}: HTTP ${response.status}`)
+          continue
+        }
 
-      const data = await response.json()
-      if (!data.products) continue
+        const data = await response.json()
+        if (!data.products) continue
+      } catch (itemErr) {
+        console.log(`[save-on-foods] ${item}: ${itemErr.message}`)
+        continue
+      }
 
       // Extract prices from this item's results
       data.products.forEach(product => {
@@ -47,7 +56,7 @@ async function fetchSaveOnFoodsPrices(postalCode = 'V6B4X8', daysAhead = 7) {
       })
 
       // Rate limiting
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise(resolve => setTimeout(resolve, 1500))
     }
 
     if (allPrices.size > 0) {

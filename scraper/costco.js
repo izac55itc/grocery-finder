@@ -31,18 +31,27 @@ async function fetchCostcoPrices(postalCode = 'V6B4X8', daysAhead = 7) {
         postalCode: postalCode.replace(/\s/g, '')
       })
 
-      const response = await fetch(`${baseUrl}?${params}`, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          'Accept': 'application/json',
-        },
-        timeout: 10000
-      })
+      try {
+        const response = await fetch(`${baseUrl}?${params}`, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'application/json',
+            'Referer': 'https://www.costco.ca/'
+          },
+          timeout: 10000
+        })
 
-      if (!response.ok) continue
+        if (!response.ok) {
+          console.log(`[costco] ${item}: HTTP ${response.status}`)
+          continue
+        }
 
-      const data = await response.json()
-      if (!data.results) continue
+        const data = await response.json()
+        if (!data.results) continue
+      } catch (itemErr) {
+        console.log(`[costco] ${item}: ${itemErr.message}`)
+        continue
+      }
 
       // Extract prices from this item's results
       data.results.forEach(product => {
@@ -50,7 +59,7 @@ async function fetchCostcoPrices(postalCode = 'V6B4X8', daysAhead = 7) {
       })
 
       // Rate limiting
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise(resolve => setTimeout(resolve, 1500))
     }
 
     if (allPrices.size > 0) {
