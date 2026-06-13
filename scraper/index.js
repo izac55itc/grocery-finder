@@ -42,7 +42,7 @@ async function main() {
 
     // Delete old prices and insert new ones
     const { error: deleteErr } = await supabase
-      .from('prices')
+      .from('price_summaries')
       .delete()
       .not('id', 'is', null)
 
@@ -55,7 +55,7 @@ async function main() {
     // Insert new prices (adjust for your schema)
     if (allSummaries.length > 0) {
       const { data, error } = await supabase
-        .from('prices')
+        .from('price_summaries')
         .insert(allSummaries)
 
       if (error) {
