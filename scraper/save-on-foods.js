@@ -1,22 +1,31 @@
 'use strict'
 
+const STAPLE_ITEMS = [
+  'milk',
+  'eggs',
+  'bread',
+  'butter',
+  'cheese',
+  'chicken',
+  'ground beef',
+  'rice',
+  'pasta',
+  'bananas',
+  'apples'
+]
+
 async function fetchSaveOnFoodsPrices(postalCode = 'V6B4X8', daysAhead = 7) {
   const results = []
 
   try {
-    console.log(`[save-on-foods] Fetching prices for postal code ${postalCode}...`)
+    console.log(`[save-on-foods] Fetching staple items for postal code ${postalCode}...`)
 
-    // Save-On-Foods API endpoint (reverse-engineered)
     const baseUrl = 'https://api.saveonfoods.com/products/search'
+    const allPrices = new Set()
 
-    let skip = 0
-    const take = 50
-    let hasMore = true
-    let pageCount = 0
-    const maxPages = 20 // Limit to avoid rate limiting
-
-    while (hasMore && pageCount < maxPages) {
-      const url = `${baseUrl}?postalCode=${postalCode}&skip=${skip}&take=${take}`
+    // Search for each staple item
+    for (const item of STAPLE_ITEMS) {
+      const url = `${baseUrl}?postalCode=${postalCode}&query=${encodeURIComponent(item)}&take=20`
 
       const response = await fetch(url, {
         headers: {
@@ -26,57 +35,42 @@ async function fetchSaveOnFoodsPrices(postalCode = 'V6B4X8', daysAhead = 7) {
         timeout: 10000
       })
 
-      if (!response.ok) {
-        console.log(`[save-on-foods] API returned ${response.status}, stopping pagination`)
-        break
-      }
+      if (!response.ok) continue
 
       const data = await response.json()
+      if (!data.products) continue
 
-      if (!data.products || data.products.length === 0) {
-        hasMore = false
-        continue
-      }
-
-      // Extract unique prices from products
-      const prices = new Set()
+      // Extract prices from this item's results
       data.products.forEach(product => {
-        if (product.price) {
-          prices.add(parseFloat(product.price))
-        }
-        if (product.salePrice) {
-          prices.add(parseFloat(product.salePrice))
-        }
+        if (product.price) allPrices.add(parseFloat(product.price))
+        if (product.salePrice) allPrices.add(parseFloat(product.salePrice))
       })
 
-      if (prices.size > 0) {
-        const pricesArray = Array.from(prices).sort((a, b) => a - b)
-        const minPrice = pricesArray[0]
-        const maxPrice = pricesArray[pricesArray.length - 1]
+      // Rate limiting
+      await new Promise(resolve => setTimeout(resolve, 500))
+    }
 
-        // Add result for each day (same prices)
-        for (let day = 0; day < daysAhead; day++) {
-          const date = new Date()
-          date.setDate(date.getDate() + day)
-          const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+    if (allPrices.size > 0) {
+      const pricesArray = Array.from(allPrices).sort((a, b) => a - b)
+      const minPrice = pricesArray[0]
+      const maxPrice = pricesArray[pricesArray.length - 1]
 
-          results.push({
-            date: dateStr,
-            minPrice: Math.round(minPrice * 100) / 100,
-            maxPrice: Math.round(maxPrice * 100) / 100,
-            availableCount: data.products.length,
-            hasHotDeals: false
-          })
-        }
+      // Add result for each day
+      for (let day = 0; day < daysAhead; day++) {
+        const date = new Date()
+        date.setDate(date.getDate() + day)
+        const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 
-        console.log(`[save-on-foods] Found ${data.products.length} products, price range: $${minPrice.toFixed(2)} - $${maxPrice.toFixed(2)}`)
+        results.push({
+          date: dateStr,
+          minPrice: Math.round(minPrice * 100) / 100,
+          maxPrice: Math.round(maxPrice * 100) / 100,
+          availableCount: STAPLE_ITEMS.length,
+          hasHotDeals: false
+        })
       }
 
-      skip += take
-      pageCount++
-
-      // Rate limiting
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      console.log(`[save-on-foods] Price range: $${minPrice.toFixed(2)} - $${maxPrice.toFixed(2)}`)
     }
 
     return results
