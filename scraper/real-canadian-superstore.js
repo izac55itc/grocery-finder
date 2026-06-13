@@ -1,5 +1,7 @@
 'use strict'
 
+import puppeteer from 'puppeteer'
+
 const STAPLE_ITEMS = [
   'milk',
   'eggs',
@@ -16,58 +18,58 @@ const STAPLE_ITEMS = [
 
 async function fetchRealCanadianSuperStorePrices(postalCode = 'V3A3M2', daysAhead = 7) {
   const results = []
+  let browser
 
   try {
     console.log(`[real-canadian-superstore] Fetching staple items for postal code ${postalCode}...`)
 
-    const baseUrl = 'https://www.realcanadiansuperstore.ca/api/products/search'
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    })
+
+    const page = await browser.newPage()
     const allPrices = new Set()
 
-    // Search for each staple item
     for (const item of STAPLE_ITEMS) {
-      const params = new URLSearchParams({
-        q: item,
-        limit: 20,
-        postalCode: postalCode.replace(/\s/g, '')
-      })
-
       try {
-        const response = await fetch(`${baseUrl}?${params}`, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'application/json',
-            'Referer': 'https://www.realcanadiansuperstore.ca/'
-          },
-          timeout: 10000
+        const searchUrl = `https://www.realcanadiansuperstore.ca/search?q=${encodeURIComponent(item)}`
+        await page.goto(searchUrl, { waitUntil: 'networkidle2', timeout: 15000 })
+
+        // Extract prices from product listings
+        const prices = await page.evaluate(() => {
+          const priceElements = document.querySelectorAll('[data-price], .price, .product-price, [class*="price"]')
+          const prices = []
+
+          priceElements.forEach(el => {
+            const text = el.textContent?.trim()
+            if (text && /^\$?[\d,]+\.?\d*/.test(text)) {
+              const price = parseFloat(text.replace(/[^\d.]/g, ''))
+              if (price > 0) prices.push(price)
+            }
+          })
+
+          return prices
         })
 
-        if (!response.ok) {
-          console.log(`[real-canadian-superstore] ${item}: HTTP ${response.status}`)
-          continue
-        }
+        prices.forEach(price => allPrices.add(price))
+        console.log(`[real-canadian-superstore] ${item}: found ${prices.length} prices`)
 
-        const data = await response.json()
-        if (!data.products) continue
+        // Rate limiting
+        await new Promise(resolve => setTimeout(resolve, 2000))
       } catch (itemErr) {
         console.log(`[real-canadian-superstore] ${item}: ${itemErr.message}`)
         continue
       }
-
-      // Extract prices from this item's results
-      data.products.forEach(product => {
-        if (product.price) allPrices.add(parseFloat(product.price))
-      })
-
-      // Rate limiting
-      await new Promise(resolve => setTimeout(resolve, 1500))
     }
+
+    await page.close()
 
     if (allPrices.size > 0) {
       const pricesArray = Array.from(allPrices).sort((a, b) => a - b)
       const minPrice = pricesArray[0]
       const maxPrice = pricesArray[pricesArray.length - 1]
 
-      // Add result for each day
       for (let day = 0; day < daysAhead; day++) {
         const date = new Date()
         date.setDate(date.getDate() + day)
@@ -89,6 +91,8 @@ async function fetchRealCanadianSuperStorePrices(postalCode = 'V3A3M2', daysAhea
   } catch (err) {
     console.log(`[real-canadian-superstore] Error: ${err.message}`)
     return []
+  } finally {
+    if (browser) await browser.close()
   }
 }
 

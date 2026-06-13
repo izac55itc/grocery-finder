@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "grocery-finder-scraper",
   "version": "0.1.0",
   "private": true,
@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.107.0",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "puppeteer": "^24.0.0"
   }
 }
