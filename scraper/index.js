@@ -1,4 +1,5 @@
 'use strict'
+import ws from 'ws'
 import { createClient } from '@supabase/supabase-js'
 import { fetchFlippPrices } from './flipp.js'
 
@@ -12,7 +13,9 @@ async function main() {
     throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY env vars')
   }
 
-  const supabase = createClient(supabaseUrl, supabaseKey)
+  const supabase = createClient(supabaseUrl, supabaseKey, {
+    realtime: { transport: ws }
+  })
 
   const now = new Date()
   const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
