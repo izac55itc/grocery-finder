@@ -1,9 +1,7 @@
 'use strict'
 import ws from 'ws'
 import { createClient } from '@supabase/supabase-js'
-import { fetchSaveOnFoodsPrices } from './save-on-foods.js'
-import { fetchCostcoPrices } from './costco.js'
-import { fetchRealCanadianSuperStorePrices } from './real-canadian-superstore.js'
+import { fetchFlippPrices } from './flipp.js'
 
 const DAYS_AHEAD = 7
 
@@ -26,38 +24,12 @@ async function main() {
   const allSummaries = []
 
   try {
-    // Scrape all stores
-    console.log('Fetching Save-On-Foods prices...')
-    const saveOnFoodsData = await fetchSaveOnFoodsPrices('V6B4X8', DAYS_AHEAD)
-    saveOnFoodsData.forEach(item => {
+    // Scrape via Flipp API (aggregates all stores)
+    console.log('Fetching prices via Flipp API...')
+    const flippData = await fetchFlippPrices('V6B4X8', DAYS_AHEAD)
+    flippData.forEach(item => {
       allSummaries.push({
         store_id: 1,
-        date: item.date,
-        min_price: item.minPrice,
-        max_price: item.maxPrice,
-        available_count: item.availableCount,
-        has_hot_deals: item.hasHotDeals
-      })
-    })
-
-    console.log('Fetching Costco prices...')
-    const costcoData = await fetchCostcoPrices('V6B4X8', DAYS_AHEAD)
-    costcoData.forEach(item => {
-      allSummaries.push({
-        store_id: 2,
-        date: item.date,
-        min_price: item.minPrice,
-        max_price: item.maxPrice,
-        available_count: item.availableCount,
-        has_hot_deals: item.hasHotDeals
-      })
-    })
-
-    console.log('Fetching Real Canadian Superstore prices...')
-    const realCanadianData = await fetchRealCanadianSuperStorePrices('V3A3M2', DAYS_AHEAD)
-    realCanadianData.forEach(item => {
-      allSummaries.push({
-        store_id: 3,
         date: item.date,
         min_price: item.minPrice,
         max_price: item.maxPrice,
