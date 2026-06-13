@@ -25,7 +25,12 @@ async function fetchRealCanadianSuperStorePrices(postalCode = 'V3A3M2', daysAhea
 
     browser = await puppeteer.launch({
       headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-http2'
+      ]
     })
 
     const page = await browser.newPage()
@@ -38,18 +43,36 @@ async function fetchRealCanadianSuperStorePrices(postalCode = 'V3A3M2', daysAhea
 
         // Extract prices from product listings
         const prices = await page.evaluate(() => {
-          const priceElements = document.querySelectorAll('[data-price], .price, .product-price, [class*="price"]')
           const prices = []
+
+          // Try multiple selector strategies
+          const selectors = [
+            '[data-price]',
+            '.price',
+            '.product-price',
+            '[class*="price"]',
+            '[class*="Price"]',
+            'span[class*="price"]',
+            'div[class*="price"]'
+          ]
+
+          let priceElements = []
+          for (const selector of selectors) {
+            priceElements = [...priceElements, ...document.querySelectorAll(selector)]
+          }
 
           priceElements.forEach(el => {
             const text = el.textContent?.trim()
-            if (text && /^\$?[\d,]+\.?\d*/.test(text)) {
-              const price = parseFloat(text.replace(/[^\d.]/g, ''))
-              if (price > 0) prices.push(price)
+            if (text && /\$?\d+[.,]\d{2}/.test(text)) {
+              const match = text.match(/\d+[.,]\d{2}/)
+              if (match) {
+                const price = parseFloat(match[0].replace(',', '.'))
+                if (price > 0 && price < 10000) prices.push(price)
+              }
             }
           })
 
-          return prices
+          return [...new Set(prices)]
         })
 
         prices.forEach(price => allPrices.add(price))
