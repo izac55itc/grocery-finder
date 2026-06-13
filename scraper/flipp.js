@@ -70,8 +70,8 @@ async function fetchFlippPrices(postalCode = 'V6B4X8', daysAhead = 7) {
           }
         }
 
-        // Rate limiting
-        await new Promise(resolve => setTimeout(resolve, 500))
+        // Rate limiting - 2s between requests to avoid 429
+        await new Promise(resolve => setTimeout(resolve, 2000))
       } catch (itemErr) {
         console.log(`[flipp] ${item}: ${itemErr.message}`)
         continue
