@@ -15,7 +15,9 @@ async function main() {
   console.log(`[supabase] URL: ${supabaseUrl}`)
   console.log(`[supabase] Key: ${supabaseKey.substring(0, 20)}...`)
 
-  const supabase = createClient(supabaseUrl, supabaseKey)
+  const supabase = createClient(supabaseUrl, supabaseKey, {
+    realtime: false
+  })
 
   const now = new Date()
   const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
