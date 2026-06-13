@@ -1,4 +1,5 @@
 'use strict'
+import ws from 'ws'
 import { createClient } from '@supabase/supabase-js'
 import { fetchFlippPrices } from './flipp.js'
 
@@ -16,7 +17,7 @@ async function main() {
   console.log(`[supabase] Key: ${supabaseKey.substring(0, 20)}...`)
 
   const supabase = createClient(supabaseUrl, supabaseKey, {
-    realtime: false
+    realtime: { transport: ws }
   })
 
   const now = new Date()
