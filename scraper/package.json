@@ -1,13 +1,13 @@
-{
-  "name": "grocery-scraper",
-  "version": "1.0.0",
+﻿{
+  "name": "grocery-finder-scraper",
+  "version": "0.1.0",
+  "private": true,
   "type": "module",
   "scripts": {
-    "scrape": "node index.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.107.0",
-    "playwright": "^1.40.0",
     "ws": "^8.18.0"
   }
 }
