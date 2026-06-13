@@ -47,10 +47,10 @@ async function main() {
     const { error: deleteErr } = await supabase
       .from('price_summaries')
       .delete()
-      .not('id', 'is', null)
+      .gte('id', 0)
 
     if (deleteErr) {
-      console.error('Error deleting old prices:', deleteErr.message)
+      console.error('Error deleting old prices:', deleteErr.message, deleteErr.details, deleteErr.hint)
     } else {
       console.log('✓ Deleted old prices')
     }
@@ -62,7 +62,8 @@ async function main() {
         .insert(allSummaries)
 
       if (error) {
-        console.error('Error inserting prices:', error.message)
+        console.error('Error inserting prices:', error.message, error.details, error.hint)
+        console.error('Full error object:', JSON.stringify(error, null, 2))
         process.exit(1)
       }
 
