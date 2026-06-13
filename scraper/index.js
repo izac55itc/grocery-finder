@@ -13,6 +13,9 @@ async function main() {
     throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY env vars')
   }
 
+  console.log(`[supabase] URL: ${supabaseUrl}`)
+  console.log(`[supabase] Key: ${supabaseKey.substring(0, 20)}...`)
+
   const supabase = createClient(supabaseUrl, supabaseKey, {
     realtime: { transport: ws }
   })
