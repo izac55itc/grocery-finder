@@ -24,8 +24,8 @@ async function fetchCostcoPrices(postalCode = 'V6B4X8', daysAhead = 7) {
     console.log(`[costco] Fetching staple items for postal code ${postalCode}...`)
 
     browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
     })
 
     const page = await browser.newPage()
