@@ -5,7 +5,7 @@ import FlippPrices from './components/FlippPrices'
 import PriceTracker from './components/PriceTracker'
 
 export default function App() {
-  const [tab, setTab] = useState('flipp')
+  const [tab, setTab] = useState('tracker')
 
   return (
     <div className="app">

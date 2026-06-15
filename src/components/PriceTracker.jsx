@@ -3,12 +3,13 @@ import * as XLSX from 'xlsx'
 
 export default function PriceTracker() {
   const [items, setItems] = useState([
-    { id: 1, name: 'Eggs', store: 'Costco Instacart', price: 11.91, packSize: 24, unit: 'ea' }
+    { id: 1, name: 'Eggs', store: 'Costco Instacart', price: 11.91, packSize: 24, unit: 'ea' },
+    { id: 2, name: 'Eggs', store: 'Walmart Online', price: 10.22, packSize: 30, unit: 'ea' }
   ])
   const [form, setForm] = useState({ name: '', store: '', price: '', packSize: '', unit: 'ea' })
-  const [nextId, setNextId] = useState(2)
+  const [nextId, setNextId] = useState(3)
 
-  const stores = ['Costco In-Store', 'Costco Instacart', 'Walmart', 'Save-On-Foods']
+  const stores = ['Costco In-Store', 'Costco Instacart', 'Walmart Online', 'Walmart In-Store', 'Save-On-Foods']
   const units = ['ea', 'lb', 'kg', 'L', 'ml', 'oz']
 
   function addItem() {
