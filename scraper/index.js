@@ -81,6 +81,15 @@ const PRICE_LIMITS = {
   'apples': 3
 }
 
+const STORE_URLS = {
+  'Walmart': 'https://walmart.ca/en/search/bananas',
+  'Healthy Planet': 'https://healthyplanetcanada.com/search?q=bananas',
+  'Well.ca': 'https://www.well.ca/search?search_text=bananas',
+  'London Drugs': 'https://www.londondrugs.com/search?q=bananas',
+  'Shoppers Drug Mart': 'https://www1.shoppersdrugmart.ca/search?text=bananas',
+  'Best Buy': 'https://www.bestbuy.ca/en-ca/search?search=bananas'
+}
+
 async function fetchFlippIndividualPrices(postalCode) {
   const allPrices = []
   const now = new Date()
@@ -123,10 +132,27 @@ async function fetchFlippIndividualPrices(postalCode) {
           if (price > 0 && price <= priceLimit) {
             const merchant = product.merchant
             if (!merchantBest[merchant] || price < merchantBest[merchant].price) {
-              // Construct Flipp search URL for the product
               const productName = product.name || item
-              const searchQuery = encodeURIComponent(`${productName} ${merchant}`)
-              const url = `https://flipp.com/search?query=${searchQuery}`
+
+              // Construct store search URL
+              let url = ''
+              const searchQuery = encodeURIComponent(item)
+
+              if (merchant === 'Walmart') {
+                url = `https://walmart.ca/en/search?search=${searchQuery}`
+              } else if (merchant === 'Healthy Planet') {
+                url = `https://healthyplanetcanada.com/search?q=${searchQuery}`
+              } else if (merchant === 'Well.ca') {
+                url = `https://www.well.ca/search?search_text=${searchQuery}`
+              } else if (merchant === 'London Drugs') {
+                url = `https://www.londondrugs.com/search?q=${searchQuery}`
+              } else if (merchant === 'Shoppers Drug Mart') {
+                url = `https://www1.shoppersdrugmart.ca/search?text=${searchQuery}`
+              } else if (merchant === 'Best Buy') {
+                url = `https://www.bestbuy.ca/en-ca/search?search=${searchQuery}`
+              } else {
+                url = `https://flipp.com/search?query=${searchQuery}`
+              }
 
               merchantBest[merchant] = {
                 price,
