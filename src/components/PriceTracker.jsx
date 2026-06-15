@@ -24,10 +24,12 @@ export default function PriceTracker() {
     { id: 19, name: 'English Cucumber', store: 'Costco Instacart', price: 3.39, packSize: 3, unit: 'ea' },
     { id: 20, name: 'English Cucumber', store: 'Walmart Online', price: 0.84, packSize: 1, unit: 'ea' },
     { id: 21, name: 'Rice Crackers', store: 'Costco Instacart', price: 2.38, packSize: 100, unit: 'g' },
-    { id: 22, name: 'Rice Crackers', store: 'Walmart Online', price: 1.48, packSize: 100, unit: 'g' }
+    { id: 22, name: 'Rice Crackers', store: 'Walmart Online', price: 1.48, packSize: 100, unit: 'g' },
+    { id: 23, name: 'Little Potatoes', store: 'Costco Instacart', price: 9.07, packSize: 2.27, unit: 'kg' },
+    { id: 24, name: 'Little Potatoes', store: 'Walmart Online', price: 2.74, packSize: 0.68, unit: 'kg' }
   ])
   const [form, setForm] = useState({ name: '', store: '', price: '', packSize: '', unit: 'ea' })
-  const [nextId, setNextId] = useState(23)
+  const [nextId, setNextId] = useState(25)
 
   const stores = ['Costco In-Store', 'Costco Instacart', 'Walmart Online', 'Walmart In-Store', 'Save-On-Foods']
   const units = ['ea', 'lb', 'kg', 'L', 'ml', 'oz']
