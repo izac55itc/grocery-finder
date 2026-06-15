@@ -38,10 +38,16 @@ export default function PriceTracker() {
     { id: 33, name: 'Chicken Breast', store: 'Save-On-Foods', price: 16.51, packSize: 1.25, unit: 'kg' },
     { id: 34, name: 'Avocado', store: 'Save-On-Foods', price: 2.00, packSize: 1, unit: 'ea' },
     { id: 35, name: 'GoGo Squeez Fruit Sauce', store: 'Save-On-Foods', price: 13.99, packSize: 12, unit: 'ea' },
-    { id: 36, name: 'Bubly Sparkling Water', store: 'Save-On-Foods', price: 6.49, packSize: 12, unit: 'ea' }
+    { id: 36, name: 'Bubly Sparkling Water', store: 'Save-On-Foods', price: 6.49, packSize: 12, unit: 'ea' },
+    { id: 37, name: 'Bell Peppers', store: 'Save-On-Foods', price: 4.99, packSize: 0.91, unit: 'kg' },
+    { id: 38, name: 'English Cucumber', store: 'Save-On-Foods', price: 6.99, packSize: 3, unit: 'ea' },
+    { id: 39, name: 'Rice Crackers', store: 'Save-On-Foods', price: 2.67, packSize: 100, unit: 'g' },
+    { id: 40, name: 'Little Potatoes', store: 'Save-On-Foods', price: 8.99, packSize: 1.36, unit: 'kg' },
+    { id: 41, name: 'Romaine Lettuce Hearts', store: 'Save-On-Foods', price: 8.99, packSize: 3, unit: 'ea' },
+    { id: 42, name: 'Oranges', store: 'Save-On-Foods', price: 2.54, packSize: 0.385, unit: 'kg' }
   ])
   const [form, setForm] = useState({ name: '', store: '', price: '', packSize: '', unit: 'ea' })
-  const [nextId, setNextId] = useState(37)
+  const [nextId, setNextId] = useState(43)
 
   const stores = ['Costco In-Store', 'Costco Instacart', 'Walmart Online', 'Walmart In-Store', 'Save-On-Foods']
   const units = ['ea', 'lb', 'kg', 'L', 'ml', 'oz']
