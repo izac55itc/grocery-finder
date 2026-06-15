@@ -118,27 +118,19 @@ async function fetchFlippIndividualPrices(postalCode) {
       const priceLimit = PRICE_LIMITS[item] || 100
 
       if (data.ecom_items && Array.isArray(data.ecom_items)) {
-        if (item === 'bananas' && data.ecom_items.length > 0) {
-          console.log(`[DEBUG] Sample product fields:`, Object.keys(data.ecom_items[0]))
-        }
         data.ecom_items.forEach(product => {
           const price = product.current_price
           if (price > 0 && price <= priceLimit) {
             const merchant = product.merchant
             if (!merchantBest[merchant] || price < merchantBest[merchant].price) {
-              // Try to construct a valid product URL
-              let url = ''
-              if (product.url) {
-                url = product.url
-              } else if (product.link) {
-                url = product.link
-              } else if (product.flyerPageId) {
-                url = `https://flipp.com/flyer/${product.flyerPageId}`
-              }
+              // Construct Flipp search URL for the product
+              const productName = product.name || item
+              const searchQuery = encodeURIComponent(`${productName} ${merchant}`)
+              const url = `https://flipp.com/search?query=${searchQuery}`
 
               merchantBest[merchant] = {
                 price,
-                name: product.name || item,
+                name: productName,
                 url: url
               }
             }
