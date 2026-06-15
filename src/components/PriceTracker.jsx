@@ -124,9 +124,15 @@ export default function PriceTracker() {
     let total = 0
 
     Object.entries(grouped).forEach(([itemName, itemList]) => {
+      const costcoItem = itemList.find(item => item.store === 'Costco Instacart')
       const storeItem = itemList.find(item => item.store === storeName)
-      if (storeItem) {
-        total += storeItem.price
+
+      if (costcoItem && storeItem) {
+        // Calculate cost per unit for the store item
+        const costPerUnit = storeItem.price / storeItem.packSize
+        // Multiply by Costco quantity
+        const cost = costPerUnit * costcoItem.packSize
+        total += cost
       }
     })
     return total
