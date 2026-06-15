@@ -106,10 +106,23 @@ export default function App() {
               {prices.length > 0 ? (
                 <div className="prices-table">
                   {prices.map((row, idx) => (
-                    <div key={idx} className="price-row">
-                      <div className="store-name">{row.merchant_name}</div>
-                      <div className="price">${row.price.toFixed(2)}</div>
-                    </div>
+                    <a
+                      key={idx}
+                      href={row.product_url || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="price-row-link"
+                    >
+                      <div className="price-row">
+                        <div className="store-and-product">
+                          <div className="store-name">{row.merchant_name}</div>
+                          {row.product_name && (
+                            <div className="product-name">{row.product_name}</div>
+                          )}
+                        </div>
+                        <div className="price">${row.price.toFixed(2)}</div>
+                      </div>
+                    </a>
                   ))}
                 </div>
               ) : (

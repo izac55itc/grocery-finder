@@ -67,6 +67,20 @@ async function main() {
   }
 }
 
+const PRICE_LIMITS = {
+  'milk': 8,
+  'eggs': 10,
+  'bread': 6,
+  'butter': 10,
+  'cheese': 20,
+  'chicken': 15,
+  'ground beef': 15,
+  'rice': 8,
+  'pasta': 5,
+  'bananas': 3,
+  'apples': 3
+}
+
 async function fetchFlippIndividualPrices(postalCode) {
   const allPrices = []
   const now = new Date()
@@ -100,29 +114,38 @@ async function fetchFlippIndividualPrices(postalCode) {
       const data = await response.json()
 
       // Group by merchant and find cheapest price
-      const merchantPrices = {}
+      const merchantBest = {}
+      const priceLimit = PRICE_LIMITS[item] || 100
+
       if (data.ecom_items && Array.isArray(data.ecom_items)) {
         data.ecom_items.forEach(product => {
-          if (product.current_price > 0) {
+          const price = product.current_price
+          if (price > 0 && price <= priceLimit) {
             const merchant = product.merchant
-            if (!merchantPrices[merchant] || product.current_price < merchantPrices[merchant]) {
-              merchantPrices[merchant] = product.current_price
+            if (!merchantBest[merchant] || price < merchantBest[merchant].price) {
+              merchantBest[merchant] = {
+                price,
+                name: product.name || item,
+                url: product.url || ''
+              }
             }
           }
         })
       }
 
       // Insert cheapest price per merchant
-      Object.entries(merchantPrices).forEach(([merchant, price]) => {
+      Object.entries(merchantBest).forEach(([merchant, data]) => {
         allPrices.push({
           item_name: item,
           merchant_name: merchant,
-          price: Math.round(price * 100) / 100,
+          price: Math.round(data.price * 100) / 100,
+          product_name: data.name,
+          product_url: data.url,
           date: todayStr
         })
       })
 
-      console.log(`[${item}] Found ${Object.keys(merchantPrices).length} merchants`)
+      console.log(`[${item}] Found ${Object.keys(merchantBest).length} merchants (limit: $${priceLimit})`)
 
       // Rate limiting
       await new Promise(resolve => setTimeout(resolve, 2000))
