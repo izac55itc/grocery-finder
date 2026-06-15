@@ -134,9 +134,19 @@ async function fetchFlippIndividualPrices(postalCode) {
             if (!merchantBest[merchant] || price < merchantBest[merchant].price) {
               const productName = product.name || item
 
-              // Link to Flipp search for the item
-              const searchQuery = encodeURIComponent(item)
-              const url = `https://flipp.com/search?query=${searchQuery}`
+              // Construct direct store URLs using SKU when available
+              let url = ''
+              if (merchant === 'Walmart' && product.sku) {
+                url = `https://www.walmart.ca/en/ip/${encodeURIComponent(item)}/${product.sku}`
+              } else if (merchant === 'Healthy Planet' && product.sku) {
+                url = `https://healthyplanetcanada.com/search?q=${encodeURIComponent(item)}`
+              } else if (product.sku) {
+                // Fallback to Flipp search with item name
+                url = `https://flipp.com/search?query=${encodeURIComponent(item)}`
+              } else {
+                // No SKU, use Flipp search
+                url = `https://flipp.com/search?query=${encodeURIComponent(item)}`
+              }
 
               merchantBest[merchant] = {
                 price,
