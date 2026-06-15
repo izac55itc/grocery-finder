@@ -119,8 +119,92 @@ export default function PriceTracker() {
 
   const grouped = getItemsByName()
 
+  function calculateStoreTotal(storeName) {
+    const grouped = getItemsByName()
+    let total = 0
+
+    Object.entries(grouped).forEach(([itemName, itemList]) => {
+      const storeItem = itemList.find(item => item.store === storeName)
+      if (storeItem) {
+        total += storeItem.price
+      }
+    })
+    return total
+  }
+
+  function getCheapestStore() {
+    const stores = ['Costco Instacart', 'Walmart Online', 'Save-On-Foods']
+    const totals = {}
+    stores.forEach(store => {
+      totals[store] = calculateStoreTotal(store)
+    })
+    return totals
+  }
+
+  const storeTotals = getCheapestStore()
+  const costcoTotal = storeTotals['Costco Instacart'] || 0
+  const walmartTotal = storeTotals['Walmart Online'] || 0
+  const saveOnTotal = storeTotals['Save-On-Foods'] || 0
+
   return (
     <div className="price-tracker">
+      <div className="summary-section">
+        <h2>💰 Annual Cost Comparison (54 Weeks)</h2>
+        <div className="summary-grid">
+          <div className="summary-card">
+            <div className="summary-store">Costco Instacart</div>
+            <div className="summary-row">
+              <span>Weekly:</span>
+              <strong>${costcoTotal.toFixed(2)}</strong>
+            </div>
+            <div className="summary-row">
+              <span>54 Weeks:</span>
+              <strong>${(costcoTotal * 54).toFixed(2)}</strong>
+            </div>
+          </div>
+
+          <div className="summary-card">
+            <div className="summary-store">Walmart Online</div>
+            <div className="summary-row">
+              <span>Weekly:</span>
+              <strong>${walmartTotal.toFixed(2)}</strong>
+            </div>
+            <div className="summary-row">
+              <span>54 Weeks:</span>
+              <strong>${(walmartTotal * 54).toFixed(2)}</strong>
+            </div>
+          </div>
+
+          <div className="summary-card">
+            <div className="summary-store">Save-On-Foods</div>
+            <div className="summary-row">
+              <span>Weekly:</span>
+              <strong>${saveOnTotal.toFixed(2)}</strong>
+            </div>
+            <div className="summary-row">
+              <span>54 Weeks:</span>
+              <strong>${(saveOnTotal * 54).toFixed(2)}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div className="savings-section">
+          <h3>Savings vs Costco</h3>
+          <div className="savings-grid">
+            <div className="saving-card">
+              <div className="saving-label">Walmart Online</div>
+              <div className="saving-amount">${((costcoTotal - walmartTotal) * 54).toFixed(2)}</div>
+              <div className="saving-percent">{(((costcoTotal - walmartTotal) / costcoTotal) * 100).toFixed(1)}% cheaper</div>
+            </div>
+            <div className="saving-card">
+              <div className="saving-label">Save-On-Foods</div>
+              <div className="saving-amount">${((costcoTotal - saveOnTotal) * 54).toFixed(2)}</div>
+              <div className="saving-percent">{(((costcoTotal - saveOnTotal) / costcoTotal) * 100).toFixed(1)}% {costcoTotal > saveOnTotal ? 'cheaper' : 'more expensive'}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="tracker-form">
         <h2>Add Price</h2>
         <div className="form-row">
