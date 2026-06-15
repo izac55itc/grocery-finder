@@ -14,10 +14,12 @@ export default function PriceTracker() {
     { id: 9, name: 'Chicken Breast', store: 'Costco Instacart', price: 17.58, packSize: 1, unit: 'kg' },
     { id: 10, name: 'Chicken Breast', store: 'Walmart Online', price: 14.00, packSize: 0.93, unit: 'kg' },
     { id: 11, name: 'Avocado', store: 'Costco Instacart', price: 1.89, packSize: 1, unit: 'ea' },
-    { id: 12, name: 'Avocado', store: 'Walmart Online', price: 0.98, packSize: 1, unit: 'ea' }
+    { id: 12, name: 'Avocado', store: 'Walmart Online', price: 0.98, packSize: 1, unit: 'ea' },
+    { id: 13, name: 'GoGo Squeez Fruit Sauce', store: 'Costco Instacart', price: 21.55, packSize: 2.52, unit: 'kg' },
+    { id: 14, name: 'GoGo Squeez Fruit Sauce', store: 'Walmart Online', price: 13.97, packSize: 1.8, unit: 'kg' }
   ])
   const [form, setForm] = useState({ name: '', store: '', price: '', packSize: '', unit: 'ea' })
-  const [nextId, setNextId] = useState(13)
+  const [nextId, setNextId] = useState(15)
 
   const stores = ['Costco In-Store', 'Costco Instacart', 'Walmart Online', 'Walmart In-Store', 'Save-On-Foods']
   const units = ['ea', 'lb', 'kg', 'L', 'ml', 'oz']
