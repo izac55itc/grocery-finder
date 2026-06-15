@@ -6,7 +6,7 @@ export default function PriceTracker() {
     { id: 1, name: 'Eggs', store: 'Costco Instacart', price: 11.91, packSize: 24, unit: 'ea' },
     { id: 2, name: 'Eggs', store: 'Walmart Online', price: 10.22, packSize: 30, unit: 'ea' },
     { id: 3, name: 'Bananas', store: 'Costco Instacart', price: 2.26, packSize: 1.36, unit: 'kg' },
-    { id: 4, name: 'Bananas', store: 'Walmart Online', price: 0.40, packSize: 0.10, unit: 'kg' },
+    { id: 4, name: 'Bananas', store: 'Walmart Online', price: 1.70, packSize: 1, unit: 'kg' },
     { id: 5, name: 'Milk (1% 4L)', store: 'Costco Instacart', price: 6.50, packSize: 4, unit: 'L' },
     { id: 6, name: 'Milk (1% 4L)', store: 'Walmart Online', price: 5.73, packSize: 4, unit: 'L' }
   ])
