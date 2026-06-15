@@ -1,48 +1,41 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import './App.css'
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://kevikdfqkbptebgugess.supabase.co'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
+import FlippPrices from './components/FlippPrices'
+import PriceTracker from './components/PriceTracker'
 
 export default function App() {
-  const [prices, setPrices] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [item, setItem] = useState('bananas')
-  const [lastUpdate, setLastUpdate] = useState('')
+  const [tab, setTab] = useState('flipp')
 
-  useEffect(() => {
-    fetchPrices(item)
-  }, [item])
+  return (
+    <div className="app">
+      <header className="header">
+        <h1>🛒 Grocery Finder</h1>
+        <p>Compare grocery prices across Canadian stores</p>
+      </header>
 
-  async function fetchPrices(selectedItem) {
-    try {
-      const { data, error } = await supabase
-        .from('item_prices')
-        .select('*')
-        .eq('item_name', selectedItem)
-        .order('price', { ascending: true })
+      <div className="container">
+        <div className="tabs">
+          <button
+            className={`tab ${tab === 'flipp' ? 'active' : ''}`}
+            onClick={() => setTab('flipp')}
+          >
+            Live Prices
+          </button>
+          <button
+            className={`tab ${tab === 'tracker' ? 'active' : ''}`}
+            onClick={() => setTab('tracker')}
+          >
+            Price Tracker
+          </button>
+        </div>
 
-      if (error) throw error
-
-      if (data && data.length > 0) {
-        setPrices(data)
-        setLastUpdate(new Date(data[0].created_at).toLocaleDateString())
-      } else {
-        setPrices([])
-        setLastUpdate('')
-      }
-    } catch (err) {
-      console.error('Error fetching prices:', err)
-      setPrices([])
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const cheapest = prices.length > 0 ? prices[0].price : null
-  const mostExpensive = prices.length > 0 ? prices[prices.length - 1].price : null
+        {tab === 'flipp' && <FlippPrices />}
+        {tab === 'tracker' && <PriceTracker />}
+      </div>
+    </div>
+  )
+}
 
   return (
     <div className="app">
